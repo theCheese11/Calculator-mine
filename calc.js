@@ -3,8 +3,8 @@ let b =''; //second number
 let sign=''; //знак операции 
 let finish = true ;
 
-const digit =['0','1','2','3','4','5','6','7','8','9','.','-1','-2'];
-const action = ['-','+','X','/','%'];
+const digit =['0','1','2','3','4','5','6','7','8','9','.'];
+const action = ['-','+','X','/','%','+/-'];
 
 // экран калькулятора 
 
@@ -33,7 +33,7 @@ document.querySelector('.buttons').onclick = (event) => {
 
     // если нажата клавиша 0-9 или ,
     if (digit.includes(key)) {
-        if (b === '' && sign === ''){
+        if (['','-'].includes(b) && sign === ''){
             a+=key;
             out.textContent = a;
         }
@@ -46,55 +46,62 @@ document.querySelector('.buttons').onclick = (event) => {
             b += key;
             out.textContent = b;
         }
-        console.table(a, b, sign);
+        console.log(a);
+        console.log(b);
+        console.log(sign);
         return;
     }
 
     // если нажата клавиша + - / *
-
     if (action.includes(key)) {
         sign = key;
-        out.textContent = sign;
+        if(sign === '+/-'){
+            if(b==='') {
+                a=String(-Number(a))
+                out.textContent = a;
+            }
+            else if (b!=='' && finish===false){
+                b=String(-Number(b))
+                out.textContent = b;
+            }
+            else if (b!=='' && finish){
+                a=String(-Number(a))
+                out.textContent = a;
+            }
+        }
+        // else if(sign === '-'){
+        //     if(b==='' && a!==''){
+        //         b='-'
+        //         out.textContent = '-0'
+        //     }
+        //     else if(a==='' && b===''){
+        //         a='-'
+        //         out.textContent = '-0'
+        //     }
+        // }
+        else {
+            out.textContent = sign;
+        }
         console.log(a, b, sign);
         return;
     }
 
-    // меняем знак ответа или отдельного числа 
-    if (key === '+/-'){
-        if (b ==='' || finish){
-            if (a > 0){
-                out.textContent = -a;
-            }
-            else if (a < 0){
-                out.textContent = Math.abs(a);
-            }
-        }
-        else if (b !== ''){
-            if (b > 0){
-                out.textContent = -b;
-            }
-            else if (b < 0){
-                out.textContent = Math.abs(b);
-            }
-        }
-        key ='';
-    }
     // нажата кнопка =
     if (key === '='){
         if (b === '') b = a;  // при нажатии 5+= получится 10 и т.д.
         switch (sign){
             case '+':
-                a = (+a) + (+b); // операция сложения
+                a = Number(a) + Number(b);
                 break;
-            case '-': //
+            case '-':
                 a = a - b;
                 break;
-            case 'X': // операция умножения
+            case 'X':
                 a = a * b;
                 break;
-            case '/': // операция деления
-                if (b === '0'){ // ошибка деления на ноль
-                    out.textContent = 'Error'; 
+            case '/':
+                if (b === '0'){
+                    out.textContent = 'Error';
                     a='';
                     b='';
                     sign='';
@@ -102,12 +109,16 @@ document.querySelector('.buttons').onclick = (event) => {
                 }
                 a = a / b;
                 break;
-            case '%': // процент от числа 
+            case '%':
                 a = a * (b / 100);
                 break;
+            // case '+/-':
+            //     a = -a;
         }
         finish = true;
         out.textContent = a;
-        console.table(a, b, sign);
+        console.log(a);
+        console.log(b);
+        console.log(sign);
     }
 }
